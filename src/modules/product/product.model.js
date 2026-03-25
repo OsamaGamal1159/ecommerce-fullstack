@@ -13,7 +13,7 @@ const productSchema = new mongoose.Schema(
     colors: { type: [String], default: [], required: true },
     collections: { type: [String], default: [], required: true },
     material: { type: String },
-    gender: { type: String, enum: ["male", "female", "unisex"] },
+    gender: { type: String, enum: ["Men", "Women", "unisex"] },
     countInStock: { type: Number, default: 0 },
     image: [
       { url: { type: String, required: true }, altText: { type: String } },
