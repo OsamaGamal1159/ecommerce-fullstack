@@ -138,3 +138,71 @@ export const deleteCart = async (req, res) => {
     return res.status(500).json({ message: "Server Error" });
   }
 };
+
+export const getUserCart = async (req, res) => {
+  const { userId, guestId } = req.query;
+  try {
+    const cart = await getCart(userId, guestId);
+    if (cart) {
+      res.json(cart);
+    } else {
+      res.status(404).json({ message: "Cart Not Found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const mergeCart = async (req, res) => {
+  const { guestId } = req.body;
+  try {
+    const gusetCart = await Cart.findOne({ guestId });
+    const userCart = await Cart.findOne({ user: req.user._id });
+    if (gusetCart) {
+      if (gusetCart.products.length === 0) {
+        return res.status(400).json({ message: "Guest Cart Is empty" });
+      }
+
+      if (userCart) {
+        gusetCart.products.forEach((gusetItem) => {
+          const productIndex = userCart.products.findIndex((item) => {
+            item.productId.toString() === gusetItem.productId.toString() &&
+              item.size === gusetItem.size &&
+              item.color === gusetItem.color;
+          });
+          if (productIndex > -1) {
+            userCart.products[productIndex].quantity += gusetItem.quantity;
+          } else {
+            userCart.products.push(gusetItem);
+          }
+        });
+        userCart.totalPrice = userCart.products.reduce(
+          (acc, item) => acc + item.price * item.quantity,
+          0,
+        );
+        await userCart.save();
+
+        try {
+          await Cart.findOneAndDelete({ guestId });
+        } catch (error) {
+          console.error("Error deleting guest cart : ", error);
+        }
+        res.status(200).json(gusetCart);
+      } else {
+        gusetCart.user = req.user._id;
+        gusetCart.guestId = undefined;
+        await gusetCart.save();
+        res.status(200).json(gusetCart);
+      }
+    } else {
+      if (userCart) {
+        return res.status(200).json(userCart);
+      }
+      res.status(404).json({ message: "Guest cart not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
