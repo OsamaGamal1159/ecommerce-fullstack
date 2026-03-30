@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const orderItemSchema = new mongoose.Schema(
+const checkoutItemSchema = new mongoose.Schema(
   {
     productId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,15 +15,9 @@ const orderItemSchema = new mongoose.Schema(
 
     image: {
       type: String,
-      required: true,
     },
 
     price: {
-      type: Number,
-      required: true,
-    },
-
-    quantity: {
       type: Number,
       required: true,
     },
@@ -31,14 +25,14 @@ const orderItemSchema = new mongoose.Schema(
   { _id: false },
 );
 
-const orderSchema = new mongoose.Schema(
+const checkoutSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
 
-    orderItems: [orderItemSchema],
+    checkoutItems: [checkoutItemSchema],
 
     shippingAddress: {
       address: {
@@ -78,28 +72,23 @@ const orderSchema = new mongoose.Schema(
 
     paymentStatus: {
       type: String,
-      default: "Pending", // Pending | Paid | Failed
+      default: "Pending", // Pending, Paid, Failed
     },
 
     paymentDetails: {
-      type: Object,
-    },
-    status: {
-      type: String,
-      enum: ["Processing", "Shipped", "Delivered", "Cancelled"],
-      default: "Processing",
+      type: mongoose.Schema.Types.Mixed,
     },
 
-    isDelivered: {
+    isFinalized: {
       type: Boolean,
       default: false,
     },
 
-    deliveredAt: Date,
+    finalizedAt: Date,
   },
   {
     timestamps: true,
   },
 );
 
-export default mongoose.model("Order", orderSchema);
+export default mongoose.model("Checkout", checkoutSchema);
