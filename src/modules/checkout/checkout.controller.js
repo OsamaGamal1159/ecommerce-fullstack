@@ -57,13 +57,13 @@ export const createOrderFromCheckout = async (req, res) => {
   try {
     const checkout = await Checkout.findById(req.params.id);
     if (!checkout) {
-      return res.status(404).json({ message: "Cheout Not Foune" });
+      return res.status(404).json({ message: "Cheout Not Found" });
     }
 
     if (checkout.isPaid && !checkout.isFinalized) {
       const finalOrder = await Order.create({
         user: checkout.user,
-        orderItems: checkout.orderItems,
+        orderItems: checkout.checkoutItems,
         shippingAddress: checkout.shippingAddress,
         paymentMethod: checkout.paymentMethod,
         totalPrice: checkout.totalPrice,
