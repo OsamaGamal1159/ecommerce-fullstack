@@ -33,7 +33,7 @@ export const addUser = async (req, res) => {
 
 export const UpdateUser = async (req, res) => {
   try {
-    const user =await User.findById(req.params.id);
+    const user = await User.findById(req.params.id);
     if (user) {
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
@@ -43,6 +43,22 @@ export const UpdateUser = async (req, res) => {
     const updatedUser = await user.save();
 
     res.json({ message: "User updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+      await user.deleteOne();
+      res.json({ message: "User deleted successfully!" });
+    } else {
+      res.status(404).json({ message: "User Not Found!" });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
