@@ -10,7 +10,7 @@ import {
   newArrivals,
 } from "./product.controller.js";
 import protect from "../../middlewares/auth.middleware.js";
-import { admin } from "../../middlewares/admin.middelware.js";
+import { admin } from "../../middlewares/admin.middleware.js";
 const router = express.Router();
 
 router.post("/", protect, admin, createProduct);
