@@ -1,12 +1,12 @@
 import express from "express";
-import protect from "../../middlewares/auth.middleware.js";
-import { admin } from "../../middlewares/admin.middleware.js";
+import protect from "../../../middlewares/auth.middleware.js";
+import { admin } from "../../../middlewares/admin.middleware.js";
 import {
   getAllUsers,
   addUser,
   UpdateUser,
   deleteUser,
-} from "./admin.controller.js";
+} from "./user.controller.js";
 const router = express.Router();
 
 router.get("/", protect, admin, getAllUsers);

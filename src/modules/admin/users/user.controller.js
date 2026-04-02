@@ -1,4 +1,9 @@
-import User from "../user/user.model.js";
+import User from "../../user/user.model.js";
+import Order from "../../order/order.model.js";
+
+
+
+
 
 export const getAllUsers = async (req, res) => {
   try {
