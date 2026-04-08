@@ -7,7 +7,7 @@ import { FiPhoneCall } from "react-icons/fi";
 
 const Footer = () => {
   return (
-    <footer className="border-t py-12">
+    <footer className="border-t py-12 ml-10">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-6 lg:px-0">
         <div>
           <h3 className="text-lg text-gray-500 mb-4"> Newasletter</h3>
