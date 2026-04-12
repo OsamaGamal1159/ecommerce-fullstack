@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { FaFilter } from "react-icons/fa";
 import FilterSidebar from "../components/Products/FilterSidebar.jsx";
+import SortOptions from "../components/Products/SortOptions.jsx";
+import ProductGrid from "../components/Products/ProductGrid.jsx";
 
 const CollectionPage = () => {
   const [products, setProducts] = useState([]);
@@ -10,22 +12,21 @@ const CollectionPage = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-  
-  const handleClickOutside=(e)=>{
-  
-  if(sidebarRef.current && !sidebarRef.current.contains(e.target)){
-  setIsSidebarOpen(false);
-  }
-  }
 
-  useEffect(()=>{
-    //  Add Event Listner for clicks
+  const handleClickOutside = (e) => {
+    if (sidebarRef.current && !sidebarRef.current.contains(e.target)) {
+      setIsSidebarOpen(false);
+    }
+  };
+
+  useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
-    // Clean Event Listener 
-    document.removeEventListener("mousedown",handleClickOutside )
-  })
 
-  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  });
+
   useEffect(() => {
     setTimeout(() => {
       const fetchProducts = [
@@ -85,17 +86,28 @@ const CollectionPage = () => {
   return (
     <div className="flex flex-col lg:flex-row">
       {/* Mobile Filter button  */}
-      <button className="lg:hidden border p-2 flex justify-center items-center"
-      onClick={toggleSidebar}
+      <button
+        className="lg:hidden border p-2 flex justify-center items-center"
+        onClick={toggleSidebar}
       >
         <FaFilter className="mr-2" /> Filters
       </button>
       {/* Filter sidebar  */}
-      <div ref={sidebarRef} 
-      className={`${isSidebarOpen ? "translate-x-0" :"-translate-x-full "} fixed inset-y-0 z-50 left-0 w-64
+      <div
+        ref={sidebarRef}
+        className={`${isSidebarOpen ? "translate-x-0" : "-translate-x-full "} fixed inset-y-0 z-50 left-0 w-64
        bg-white overflow-y-auto transition-transform duration-300 lg:static lg:translate-x-0 `}
       >
         <FilterSidebar />
+      </div>
+      <div className="flex-grow p-4">
+        <h2 className="text-2xl uppercase mb-4">All Collection </h2>
+
+        {/* Sort Collection  */}
+        <SortOptions />
+        {/* Product Grid  */}
+       <ProductGrid product={products} />
+
       </div>
     </div>
   );

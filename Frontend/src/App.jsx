@@ -7,6 +7,8 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Profile from "./pages/Profile.jsx";
 import CollectionPage from "./pages/CollectionPage.jsx";
+import ProductDetails from "./components/Products/ProductDetails.jsx";
+import Checkout from "./components/Cart/Checkout.jsx";
 
 function App() {
   return (
@@ -19,6 +21,9 @@ function App() {
           <Route  path="/register" index element={<Register />} />
           <Route  path="/profile" index element={<Profile />} />
           <Route  path="/collections/:collection" index element={<CollectionPage />} />
+          <Route  path="/product/:id"  element={<ProductDetails/>} />
+          <Route  path="/checkout"  element={<Checkout/>} />
+          
         </Route>
       </Routes>
     </BrowserRouter>
