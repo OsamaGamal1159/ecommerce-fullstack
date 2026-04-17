@@ -57,6 +57,10 @@ const Navbar = () => {
         </div>
         {/* Icons */}
         <div className=" flex space-x-4 items-center ">
+          <Link
+            to="/admin"
+            className="block bg-black px-2 rounded text-sm text-white"
+          >Admin</Link>
           <Link to="/profile" className="hover:text-black-">
             <HiOutlineUser className="h-6 w-6 text-gray-700"></HiOutlineUser>
           </Link>

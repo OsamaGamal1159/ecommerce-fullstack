@@ -11,6 +11,10 @@ import ProductDetails from "./components/Products/ProductDetails.jsx";
 import Checkout from "./components/Cart/Checkout.jsx";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage.jsx";
 import OrderDetails from "./pages/OrderDetails.jsx";
+import MyOrdersPage from "./pages/MyOrdersPage.jsx";
+import AdminLayout from "./components/Admin/AdminLayout.jsx";
+import AdminHomePage from "./pages/AdminHomePage.jsx";
+import UserMangement from "./components/Admin/UserMangement.jsx";
 
 function App() {
   return (
@@ -34,6 +38,11 @@ function App() {
             element={<OrderConfirmationPage />}
           />
           <Route path="order/:id" element={<OrderDetails />} />
+          <Route path="my-orders" element={<MyOrdersPage />} />
+        </Route>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminHomePage />} />
+          <Route path="users" element={<UserMangement />} />
         </Route>
       </Routes>
     </BrowserRouter>
