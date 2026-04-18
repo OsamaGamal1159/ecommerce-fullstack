@@ -15,6 +15,7 @@ import MyOrdersPage from "./pages/MyOrdersPage.jsx";
 import AdminLayout from "./components/Admin/AdminLayout.jsx";
 import AdminHomePage from "./pages/AdminHomePage.jsx";
 import UserMangement from "./components/Admin/UserMangement.jsx";
+import ProductMangement from "./components/Admin/ProductMangement.jsx";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminHomePage />} />
           <Route path="users" element={<UserMangement />} />
+          <Route path="products" element={<ProductMangement />} />
         </Route>
       </Routes>
     </BrowserRouter>
