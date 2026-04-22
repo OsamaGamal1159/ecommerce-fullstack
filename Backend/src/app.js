@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import userRoutes from "./modules/user/user.routes.js";
 import productRouter from "./modules/product/product.routes.js";
 import cartRouter from "./modules/cart/cart.routes.js";
@@ -9,6 +10,7 @@ import subscribeRouter from "./modules/subscribers/subscribers.routes.js";
 import adminRouter from "./modules/admin/users/user.routes.js";
 import adminOrderRouter from "./modules/admin/orders/orders.routes.js";
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.use("/api/users", userRoutes);

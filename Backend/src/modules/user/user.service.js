@@ -6,7 +6,16 @@ export const createUser = async ({ name, email, password }) => {
   if (userExists) throw new Error("Email already exists");
 
   const user = await User.create({ name, email, password });
-  return generateToken(user);
+  const token = generateToken(user);
+  return {
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    },
+    token,
+  };
 };
 
 export const loginUser = async ({ email, password }) => {
@@ -16,7 +25,16 @@ export const loginUser = async ({ email, password }) => {
   const isMatch = await user.matchPassword(password);
   if (!isMatch) throw new Error("Invalid email or password");
 
-  return generateToken(user);
+  const token = generateToken(user);
+  return {
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    },
+    token,
+  };
 };
 
 const generateToken = (user) => {
