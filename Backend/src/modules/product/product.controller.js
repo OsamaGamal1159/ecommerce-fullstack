@@ -15,7 +15,7 @@ export const createProduct = async (req, res) => {
       material,
       gender,
       countInStock,
-      image,
+      images,
       tags,
       metaTitle,
       metaDescription,
@@ -40,7 +40,7 @@ export const createProduct = async (req, res) => {
       material,
       gender,
       countInStock,
-      image,
+      images,
       tags,
       metaTitle,
       metaDescription,
@@ -82,7 +82,7 @@ export const updateProduct = async (req, res) => {
       material,
       gender,
       countInStock,
-      image,
+      images,
       tags,
       metaTitle,
       metaDescription,
@@ -106,7 +106,7 @@ export const updateProduct = async (req, res) => {
     product.material = material ?? product.material;
     product.gender = gender ?? product.gender;
     product.countInStock = countInStock ?? product.countInStock;
-    product.image = image ?? product.image;
+    product.images = images ?? product.images;
     product.tags = tags ?? product.tags;
     product.metaTitle = metaTitle ?? product.metaTitle;
     product.metaDescription = metaDescription ?? product.metaDescription;
@@ -267,7 +267,7 @@ export const similarProduct = async (req, res) => {
     const { id } = req.params;
     const product = await Product.findById(id);
     if (!product) {
-      return res.status(400).json({ message: "Product Not Found" });
+      return res.status(404).json({ message: "Product Not Found" });
     }
     const similarProducts = await Product.find({
       _id: { $ne: id },
@@ -277,6 +277,6 @@ export const similarProduct = async (req, res) => {
     res.json(similarProducts);
   } catch (error) {
     console.error(error);
-    res.status(500).res.json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error" });
   }
 };

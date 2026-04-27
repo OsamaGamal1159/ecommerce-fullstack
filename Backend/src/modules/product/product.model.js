@@ -15,7 +15,7 @@ const productSchema = new mongoose.Schema(
     material: { type: String },
     gender: { type: String, enum: ["Men", "Women", "unisex"] },
     countInStock: { type: Number, default: 0 },
-    image: [
+    images: [
       { url: { type: String, required: true }, altText: { type: String } },
     ],
     rating: { type: Number, default: 0, min: 0, max: 5 },

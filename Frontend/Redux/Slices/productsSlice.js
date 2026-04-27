@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, ReducerType } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 //  Asyn Thunk to Fetch Products by Collectino and optinial Filters
@@ -163,7 +163,7 @@ const productsSlice = createSlice({
           (product) => product._id === updatedProduct._id,
         );
         if (index !== -1) {
-          state.products[index] = updateProduct;
+          state.products[index] = updatedProduct;
         }
       })
       .addCase(updateProduct.rejected, (state, action) => {
@@ -178,7 +178,7 @@ const productsSlice = createSlice({
       })
       .addCase(fetchSimilarProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = action.payload;
+        state.similarProducts = action.payload;
       })
       .addCase(fetchSimilarProducts.rejected, (state, action) => {
         state.loading = false;

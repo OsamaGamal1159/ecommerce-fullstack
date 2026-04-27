@@ -2,12 +2,20 @@ import React from "react";
 import { IoMdClose } from "react-icons/io";
 import CartContents from "../Cart/CartContents.jsx";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
   const navigate = useNavigate();
+  const { user, guestId } = useSelector((state) => state.auth);
+  const { cart } = useSelector((state) => state.cart);
+  const userId = user ? user._id : null;
 
   const handleCheckout = () => {
     toggleCartDrawer();
-    navigate("/checkout");
+    if (!user) {
+      navigate("/login?redirect=checkout");
+    } else {
+      navigate("/checkout");
+    }
   };
   return (
     <div
@@ -26,21 +34,30 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
       {/* Cart Content With Scrollabel Area */}
       <div className="flex-grow p-4 overflow-y-auto">
         <h2 className="text-xl  font-semibold md-4">Your Cart</h2>
-        <CartContents />
+        {cart && cart?.products?.length > 0 ? (
+          <CartContents cart={cart} userId={userId} guestId={guestId} />
+        ) : (
+          <p>Your Cart is empty.</p>
+        )}
+
         {/* Component for cart content */}
       </div>
       {/* Checkout Button Fixed at the Bottom/ */}
       <div className="p-4 bg-white sticky bottom-0">
-        <button
-          onClick={handleCheckout}
-          className="w-full bg-black text-white py-3 rounded-lg font-semibold
+        {cart && cart?.products?.length > 0 && (
+          <>
+            <button
+              onClick={handleCheckout}
+              className="w-full bg-black text-white py-3 rounded-lg font-semibold
          hover:bg-gray-800  transition"
-        >
-          Checkout
-        </button>
-        <p className="text-sm tracking-tighter text-gray-500 mt-2 text-center  ">
-          Shipping, taxes, and discount codes calculated at checkout.
-        </p>
+            >
+              Checkout
+            </button>
+            <p className="text-sm tracking-tighter text-gray-500 mt-2 text-center  ">
+              Shipping, taxes, and discount codes calculated at checkout.
+            </p>
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 
 const NewArrivals = () => {
   const scrollRef = useRef(null);
@@ -12,98 +13,24 @@ const NewArrivals = () => {
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
 
-  const newArrivals = [
-    {
-      _id: "1",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=1",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: "2",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=2",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: "3",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=3",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: "4",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=4",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: "5",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=5",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: "6",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=6",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: "7",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=7",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: "8",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=8",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-  ];
+  const [newArrivals, setNewArrivals] = useState([]);
 
-  // 🖱️ Drag
+  useEffect(() => {
+    const fetchNewArrivals = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`,
+        );
+        setNewArrivals(response.data);
+      } catch (error) {
+        console.error(error);
+        setNewArrivals([]);
+      }
+    };
+    fetchNewArrivals();
+    console.log("NEW ARRIVALS:", newArrivals);
+  }, []);
+
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setStartX(e.pageX - scrollRef.current.offsetLeft);
@@ -113,7 +40,7 @@ const NewArrivals = () => {
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = x - startX;
+    const walk = (x - startX) * 1.5;
     scrollRef.current.scrollLeft = scrollPosition - walk;
   };
 
@@ -121,7 +48,6 @@ const NewArrivals = () => {
     setIsDragging(false);
   };
 
-  // 🔘 Buttons Scroll
   const scroll = (direction) => {
     const scrollAmount = direction === "left" ? -300 : 300;
 
@@ -131,7 +57,6 @@ const NewArrivals = () => {
     });
   };
 
-  //  Update buttons
   const updateScrollButtons = () => {
     const container = scrollRef.current;
     if (!container) return;
@@ -144,18 +69,17 @@ const NewArrivals = () => {
     setCanScrollRight(rightScrollable);
   };
 
-  
   useEffect(() => {
     const container = scrollRef.current;
 
     if (container) {
       container.addEventListener("scroll", updateScrollButtons);
-      updateScrollButtons(); 
+      updateScrollButtons();
       return () => {
         container.removeEventListener("scroll", updateScrollButtons);
       };
     }
-  }, []);
+  }, [newArrivals]);
 
   return (
     <section className="py-16 px-4 lg:px-0">
@@ -197,7 +121,7 @@ const NewArrivals = () => {
       {/* scroll */}
       <div
         ref={scrollRef}
-        className={`container mx-auto overflow-scroll flex space-x-6 relative cursor-${
+        className={`container mx-auto overflow-x-auto overflow-y-hidden flex space-x-6 relative cursor-${
           isDragging ? "grabbing" : "grab"
         }`}
         onMouseDown={handleMouseDown}
@@ -205,26 +129,30 @@ const NewArrivals = () => {
         onMouseUp={handleMouseUpOrLeave}
         onMouseLeave={handleMouseUpOrLeave}
       >
-        {newArrivals.map((product) => (
-          <div
-            key={product._id}
-            className="min-w-full sm:min-w-[50%] lg:min-w-[33.33%] relative"
-          >
-            <img
-              src={product.images[0]?.url}
-              alt={product.images[0]?.altText || product.name}
-              className="w-full h-[500px] object-cover rounded-lg"
-              draggable={false}
-            />
+        {newArrivals.length === 0 ? (
+          <p className="text-center w-full">Loading...</p>
+        ) : (
+          newArrivals.map((product) => (
+            <div
+              key={product._id}
+              className="min-w-full sm:min-w-[50%] lg:min-w-[33.33%] relative"
+            >
+              <img
+                src={product.images?.[0]?.url || "/placeholder.jpg"}
+                alt={product.images?.[0]?.altText || product.name}
+                className="w-full h-[500px] object-cover rounded-lg"
+                draggable={false}
+              />
 
-            <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-4 rounded-b-lg">
-              <Link to={`/products/${product._id}`}>
-                <h4>{product.name}</h4>
-                <p>${product.price}</p>
-              </Link>
+              <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-4 rounded-b-lg">
+                <Link to={`/products/${product._id}`}>
+                  <h4>{product.name}</h4>
+                  <p>${product.price}</p>
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </section>
   );

@@ -42,6 +42,7 @@ export const addToCart = async (req, res) => {
         );
 
         await cart.save();
+       
         return res.status(200).json(cart);
       }
     } else {

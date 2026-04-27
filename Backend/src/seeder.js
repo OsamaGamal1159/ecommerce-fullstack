@@ -4,6 +4,7 @@ import User from "./modules/user/user.model.js";
 import Product from "./modules/product/product.model.js";
 import Cart from "./modules/cart/cart.model.js";
 import { products } from "./data/products.js";
+import bcrypt from "bcryptjs";
 
 dotenv.config();
 
@@ -19,22 +20,33 @@ const connectDB = async () => {
 
 const importProducts = async () => {
   try {
-    await User.deleteMany();
     await Product.deleteMany();
     await Cart.deleteMany();
-    const adminUser = await User.findOne({ isAdmin: true });
+
+    // ✅ بيدور على admin أو بيعمل واحد جديد
+    let adminUser = await User.findOne({ isAdmin: true });
+
     if (!adminUser) {
-      throw new Error("No admin user found! Create an admin first.");
+      const hashedPassword = await bcrypt.hash("admin123", 10);
+      adminUser = await User.create({
+        name: "Admin",
+        email: "admin@admin.com",
+        password: hashedPassword,
+        isAdmin: true,
+      });
+      console.log("✅ Admin user created!");
     }
 
     const sampleProducts = products.map((product) => ({
       ...product,
+      collections: Array.isArray(product.collections)
+        ? product.collections
+        : [product.collections],
       user: adminUser._id,
     }));
 
     await Product.insertMany(sampleProducts);
-
-    console.log("Products Imported Successfully!");
+    console.log("✅ Products Imported Successfully!");
     process.exit();
   } catch (error) {
     console.error("Error importing products:", error);
