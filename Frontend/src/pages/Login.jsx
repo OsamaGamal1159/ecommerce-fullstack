@@ -13,16 +13,12 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { user, guestId } = useSelector((state) => state.auth);
+  const { user, guestId, error, loading } = useSelector((state) => state.auth);
   const { cart } = useSelector((state) => state.cart);
 
-  // redirect param
   const redirect = new URLSearchParams(location.search).get("redirect") || "/";
-
-  // ✅ fix typo
   const isCheckoutRedirect = redirect.includes("checkout");
 
-  // ✅ FIX: remove cart from dependency to avoid infinite loop
   useEffect(() => {
     if (user) {
       if (cart?.products?.length > 0) {
@@ -35,21 +31,23 @@ const Login = () => {
     }
   }, [user, guestId, navigate, isCheckoutRedirect, dispatch]);
 
-  // ✅ FIX: add validation
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("Please enter email and password");
       return;
     }
 
-    dispatch(loginUser({ email, password }));
+    try {
+      await dispatch(loginUser({ email, password })).unwrap();
+    } catch (err) {
+      // ❌ الخطأ هيتخزن في Redux وهنعرضه تحت
+    }
   };
 
   return (
     <div className="flex">
-      <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8 md-p-12">
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8 md:p-12">
         <form
           onSubmit={handleSubmit}
           className="w-full max-w-md bg-white p-8 rounded-lg border shadow-sm"
@@ -61,8 +59,13 @@ const Login = () => {
           <h2 className="text-2xl font-bold text-center mb-6">Hey there! 👋🏻</h2>
 
           <p className="text-center mb-6">
-            Enter your username and password to Login.
+            Enter your email and password to Login.
           </p>
+
+          {/* ❌ Error Message */}
+          {error && (
+            <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
+          )}
 
           {/* Email */}
           <div className="mb-4">
@@ -91,9 +94,10 @@ const Login = () => {
           {/* Button */}
           <button
             type="submit"
-            className="w-full bg-black text-white p-2 rounded-lg font-semibold hover:bg-gray-800 transition"
+            disabled={loading}
+            className="w-full bg-black text-white p-2 rounded-lg font-semibold hover:bg-gray-800 transition disabled:opacity-50"
           >
-            Sign in
+            {loading ? "Signing in..." : "Sign in"}
           </button>
 
           {/* Register */}
@@ -111,13 +115,7 @@ const Login = () => {
 
       {/* Image */}
       <div className="hidden md:block w-1/2 bg-gray-800">
-        <div className="h-full flex flex-col justify-center items-center">
-          <img
-            src={login}
-            alt="Login To Account"
-            className="h-full w-full object-cover"
-          />
-        </div>
+        <img src={login} alt="Login" className="h-full w-full object-cover" />
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ const checkoutItemSchema = new mongoose.Schema(
       required: true,
     },
 
-    image: {
+    images: {
       type: String,
     },
 
@@ -21,10 +21,12 @@ const checkoutItemSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    quantity :{
-    type:Number,
-    required :true
+    quantity: {
+      type: Number,
+      required: true,
     },
+    size: String,
+    color: String,
   },
   { _id: false },
 );
