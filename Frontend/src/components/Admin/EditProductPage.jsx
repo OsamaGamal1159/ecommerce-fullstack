@@ -75,8 +75,6 @@ const EditProductPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // ✅ validation - لازم فيه صورة واحدة على الأقل
     if (productData.images.length === 0) {
       alert("Please upload at least one image!");
       return;
@@ -227,7 +225,6 @@ const EditProductPage = () => {
               </div>
             ))}
           </div>
-          {/* ✅ رسالة تحذير لو مفيش صور */}
           {productData.images.length === 0 && (
             <p className="text-red-500 text-sm mt-2">
               Please upload at least one image!

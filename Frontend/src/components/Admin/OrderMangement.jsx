@@ -19,7 +19,7 @@ const OrderMangement = () => {
     } else {
       dispatch(fetchAllOrders());
     }
-  }, [dispatch, navigate]);
+  }, [dispatch, navigate, user]);
 
   const handelStatusChaange = (orderId, status) => {
     dispatch(updateOrderStatus({ id: orderId, status }));

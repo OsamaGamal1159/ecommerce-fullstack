@@ -56,7 +56,7 @@ const Checkout = () => {
 
   const handlePaymentSuccess = async (details) => {
     try {
-      const response = await axios.put(
+      await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/pay`,
         {
           checkoutId,

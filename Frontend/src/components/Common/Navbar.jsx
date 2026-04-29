@@ -114,28 +114,28 @@ const Navbar = () => {
           <nav className="space-y-4">
             <Link
               to="collections/all?gender=Men"
-              onClick={toggleCartDrawer}
+              onClick={toggleNavDrawer}
               className="block text-gray-600 hover:text-black"
             >
               Men
             </Link>
             <Link
               to="collections/all?gender=Women"
-              onClick={toggleCartDrawer}
+              onClick={toggleNavDrawer}
               className="block text-gray-600 hover:text-black"
             >
               Women
             </Link>
             <Link
               to="collections/all?category=Top Wear"
-              onClick={toggleCartDrawer}
+              onClick={toggleNavDrawer}
               className="block text-gray-600 hover:text-black"
             >
               Top Wear
             </Link>
             <Link
               to="collections/all?category=Bottom Wear"
-              onClick={toggleCartDrawer}
+              onClick={toggleNavDrawer}
               className="block text-gray-600 hover:text-black"
             >
               Bottom Wear

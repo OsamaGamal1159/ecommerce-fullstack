@@ -28,7 +28,6 @@ const NewArrivals = () => {
       }
     };
     fetchNewArrivals();
-    console.log("NEW ARRIVALS:", newArrivals);
   }, []);
 
   const handleMouseDown = (e) => {
@@ -145,7 +144,7 @@ const NewArrivals = () => {
               />
 
               <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-4 rounded-b-lg">
-                <Link to={`/products/${product._id}`}>
+                <Link to={`/product/${product._id}`}>
                   <h4>{product.name}</h4>
                   <p>${product.price}</p>
                 </Link>
