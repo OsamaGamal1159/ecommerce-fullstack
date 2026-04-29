@@ -1,20 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  addUser,
+  deleteUser,
+  fetchUsers,
+  updateUser,
+} from "../../../Redux/Slices/adminSlice.js";
 
 const UserMangement = () => {
-  const users = [
-    {
-      _id: 12345,
-      name: "Osama",
-      email: "Osama123@gmail.com",
-      role: "admin",
-    },
-  ];
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { user } = useSelector((state) => state.auth);
+  const { users, loading, error } = useSelector((state) => state.admin);
+
+  useEffect(() => {
+    if (user && !user.isAdmin) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+  useEffect(() => {
+    if (user && user.isAdmin) {
+      dispatch(fetchUsers());
+    }
+  }, [dispatch, user]);
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    role: "Customer",
+    isAdmin: false,
   });
 
   const handleChange = (e) => {
@@ -26,22 +42,24 @@ const UserMangement = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    dispatch(addUser(formData));
+
     setFormData({
       name: "",
       email: "",
       password: "",
-      role: "customer",
+      isAdmin: false,
     });
   };
 
-  const handleRoleChange = (userId, newRole) => {
-    console.log({ id: userId, role: newRole });
+  const handleRoleChange = (userId, value) => {
+    console.log("SENDING:", value === "true");
+    dispatch(updateUser({ id: userId, isAdmin: value === "true" }));
   };
 
   const handleDeleteUser = (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
-      console.log("deleting user with id:", userId);
+      dispatch(deleteUser(userId));
     }
   };
 
@@ -49,6 +67,8 @@ const UserMangement = () => {
     <div className="max-w-7xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4">User Mangement </h2>
       {/* Add New User Form  */}
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
       <div className="p-6 rounded-lg mb-6">
         <h3 className="text-lg font-bold mb-4">Add New User</h3>
         <form onSubmit={handleSubmit}>
@@ -88,12 +108,12 @@ const UserMangement = () => {
           <div className="mb-4">
             <select
               name="role"
-              value={formData.role}
+              value={formData.isAdmin}
               onChange={handleChange}
               className="w-full p-2 border rounded"
             >
-              <option value="customer">Customer</option>
-              <option value="admin">Admin</option>
+              <option value="false">Customer</option>
+              <option value="true">Admin</option>
             </select>
           </div>
 
@@ -126,12 +146,12 @@ const UserMangement = () => {
                 <td className="p-4">{user.email}</td>
                 <td className="p-4">
                   <select
-                    value={user.role}
+                    value={user.isAdmin ? "true" : "false"}
                     onChange={(e) => handleRoleChange(user._id, e.target.value)}
                     className="p-2 border rounded"
                   >
-                    <option value="customer">Customer</option>
-                    <option value="admin">Admin</option>
+                    <option value="false">Customer</option>
+                    <option value="true">Admin</option>
                   </select>
                 </td>
                 <td className="p-4">

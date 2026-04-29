@@ -38,7 +38,7 @@ const CartContents = ({ cart, userId, guestId }) => {
         >
           {/* صورة المنتج */}
           <img
-            src={product.image} // ✅ image مش images
+            src={product.images} // ✅ image مش images
             alt={product.name}
             className="w-20 h-24 object-cover rounded-lg flex-shrink-0"
           />

@@ -29,7 +29,7 @@ const Login = () => {
         navigate(isCheckoutRedirect ? "/checkout" : "/");
       }
     }
-  }, [user, guestId, navigate, isCheckoutRedirect, dispatch]);
+  }, [user, guestId, navigate, isCheckoutRedirect, dispatch, cart?.products?.length]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,7 +41,7 @@ const Login = () => {
     try {
       await dispatch(loginUser({ email, password })).unwrap();
     } catch (err) {
-      // ❌ الخطأ هيتخزن في Redux وهنعرضه تحت
+      console.error(err);
     }
   };
 
@@ -62,7 +62,7 @@ const Login = () => {
             Enter your email and password to Login.
           </p>
 
-          {/* ❌ Error Message */}
+        
           {error && (
             <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
           )}

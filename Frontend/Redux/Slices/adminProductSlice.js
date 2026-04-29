@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const USER_TOKEN = `Bearer ${localStorage.getItem("userToken")}`;
+const getToken = () => `Bearer ${localStorage.getItem("userToken")}`;
 
 export const fetchAdminProducts = createAsyncThunk(
   "adminProducts/fetchAdminProducts",
@@ -9,59 +9,50 @@ export const fetchAdminProducts = createAsyncThunk(
     const response = await axios.get(
       `${import.meta.env.VITE_BACKEND_URL}/api/admin/products`,
       {
-        headers: {
-          Authorization: USER_TOKEN,
-        },
+        headers: { Authorization: getToken() },
       },
     );
     return response.data;
   },
 );
 
-// async  fucntion to create a new product
 export const createProduct = createAsyncThunk(
   "adminProducts/createProduct",
-  async (poductData) => {
+  async (productData) => {
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/api/admin/products`,
-      poductData,
+      productData,
       {
-        headers: {
-          Authorization: USER_TOKEN,
-        },
+        headers: { Authorization: getToken() },
       },
     );
     return response.data;
   },
 );
 
-// async thunk to update an existinig product
 export const updateProduct = createAsyncThunk(
   "adminProducts/updateProduct",
-  async ({ id, poductData }) => {
-    const response = await axios.post(
+  async ({ id, productData }) => {
+    // ✅ productData مش poductData
+    const response = await axios.put(
+      // ✅ put مش post
       `${import.meta.env.VITE_BACKEND_URL}/api/admin/products/${id}`,
-      poductData,
+      productData,
       {
-        headers: {
-          Authorization: USER_TOKEN,
-        },
+        headers: { Authorization: getToken() },
       },
     );
     return response.data;
   },
 );
 
-// async thunk to delete a product
 export const deleteProduct = createAsyncThunk(
   "adminProducts/deleteProduct",
-  async ({ id }) => {
+  async (id) => {
     await axios.delete(
       `${import.meta.env.VITE_BACKEND_URL}/api/admin/products/${id}`,
       {
-        headers: {
-          Authorization: USER_TOKEN,
-        },
+        headers: { Authorization: getToken() },
       },
     );
     return id;
@@ -89,12 +80,10 @@ const adminProductSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-      // Create Product
       .addCase(createProduct.fulfilled, (state, action) => {
         state.loading = false;
         state.products.push(action.payload);
       })
-      // Update Product
       .addCase(updateProduct.fulfilled, (state, action) => {
         const index = state.products.findIndex(
           (product) => product._id === action.payload._id,
@@ -103,7 +92,6 @@ const adminProductSlice = createSlice({
           state.products[index] = action.payload;
         }
       })
-      //Delete Product
       .addCase(deleteProduct.fulfilled, (state, action) => {
         state.products = state.products.filter(
           (product) => product._id !== action.payload,

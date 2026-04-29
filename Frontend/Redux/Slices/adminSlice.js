@@ -12,7 +12,7 @@ export const fetchUsers = createAsyncThunk("admin/fetchUsers", async () => {
       },
     },
   );
-  response.data;
+  return response.data;
 });
 
 //Add the create user action
@@ -41,17 +41,18 @@ export const addUser = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   "admin/updateUser",
-  async ({ id, name, email, role }) => {
+  async ({ id, name, email, isAdmin }) => {
     const response = await axios.put(
       `${import.meta.env.VITE_BACKEND_URL}/api/admin/users/${id}`,
-      { name, email, role },
+      { name, email, isAdmin },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("userToken")}`,
         },
       },
+  
     );
-    response.data;
+    return response.data.user;
   },
 );
 

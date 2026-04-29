@@ -20,15 +20,15 @@ export const fetchAllOrders = createAsyncThunk(
     }
   },
 );
-// update order delivery status
 
+// update order delivery status
 export const updateOrderStatus = createAsyncThunk(
   "adminOrders/updateOrderStatus",
   async ({ id, status }, { rejectWithValue }) => {
     try {
-      const response = await axios.get(
+      const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/admin/orders/${id}`,
-        { status },
+        { status }, 
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("userToken")}`,
@@ -84,29 +84,31 @@ const adminOrderSlice = createSlice({
         state.loading = false;
         state.orders = action.payload;
         state.totalOrders = action.payload.length;
-        const totalSales = action.payload.reduce((acc, order) => {
-          return acc + order.totalPrice;
-        }, 0);
-        state.totalSales = totalSales;
+        state.totalSales = action.payload.reduce(
+          (acc, order) => acc + order.totalPrice,
+          0,
+        );
       })
-      .addCase(fetchAllOrders.rejected, (state, actoin) => {
+      .addCase(fetchAllOrders.rejected, (state, action) => {
         state.loading = false;
-        state.error = actoin.payload.message;
+        state.error = action.payload?.message;
       })
 
       // Update Order Status
-      .addCase(updateOrderStatus.fulfilled, (state, actoin) => {
-        const updatedOrder = actoin.payload;
+      .addCase(updateOrderStatus.fulfilled, (state, action) => {
+        const updatedOrder = action.payload;
         const orderIndex = state.orders.findIndex(
           (order) => order._id === updatedOrder._id,
         );
         if (orderIndex !== -1) {
-          state.orders[orderIndex] == updatedOrder;
+          state.orders[orderIndex] = updatedOrder; 
         }
       })
-      .addCase(deleteOrder.fulfilled, (state, actoin) => {
+
+      // Delete Order
+      .addCase(deleteOrder.fulfilled, (state, action) => {
         state.orders = state.orders.filter(
-          (order) => order._id !== actoin.payload,
+          (order) => order._id !== action.payload,
         );
       });
   },

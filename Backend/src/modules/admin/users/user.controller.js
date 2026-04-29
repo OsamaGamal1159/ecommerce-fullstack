@@ -1,10 +1,6 @@
 import User from "../../user/user.model.js";
 import Order from "../../order/order.model.js";
 
-
-
-
-
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({});
@@ -42,7 +38,8 @@ export const UpdateUser = async (req, res) => {
     if (user) {
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
-      user.isAdmin = req.body.isAdmin || user.isAdmin;
+      user.isAdmin =
+        req.body.isAdmin !== undefined ? req.body.isAdmin : user.isAdmin;
     }
 
     const updatedUser = await user.save();
