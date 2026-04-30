@@ -11,15 +11,7 @@ import adminRouter from "./modules/admin/users/user.routes.js";
 import adminOrderRouter from "./modules/admin/orders/orders.routes.js";
 import adminProductRouter from "./modules/admin/products/prooducts.routes.js";
 const app = express();
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://ecommerce-fullstack-3b3c-4p88iltka.vercel.app",
-    ],
-    credentials: true,
-  }),
-);
+app.use(cors());
 app.use(express.json());
 
 app.use("/api/users", userRoutes);
