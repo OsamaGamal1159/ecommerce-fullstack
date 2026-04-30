@@ -13,8 +13,10 @@ import adminProductRouter from "./modules/admin/products/prooducts.routes.js";
 const app = express();
 app.use(
   cors({
-    origin:
-      "https://ecommerce-fullstack-h93n6vjkx-osamagamal1611-3045s-projects.vercel.app",
+    origin: [
+      "http://localhost:5173",
+      "https://ecommerce-fullstack-3b3c-4p88iltka.vercel.app",
+    ],
     credentials: true,
   }),
 );
