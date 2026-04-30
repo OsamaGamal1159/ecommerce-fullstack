@@ -11,7 +11,14 @@ import adminRouter from "./modules/admin/users/user.routes.js";
 import adminOrderRouter from "./modules/admin/orders/orders.routes.js";
 import adminProductRouter from "./modules/admin/products/prooducts.routes.js";
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGINS?.split(",") || [
+      "http://localhost:5173",
+    ],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.use("/api/users", userRoutes);
