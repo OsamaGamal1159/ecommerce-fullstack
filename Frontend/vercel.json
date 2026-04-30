@@ -13,4 +13,5 @@
          "source":"/(.*)",
          "destination":"/"
     }
-] 
+]  
+} 
