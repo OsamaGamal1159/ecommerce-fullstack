@@ -33,7 +33,7 @@ const Navbar = () => {
         {/* Logo */}
         <div>
           <Link to="/" className="text-2xl font-medium">
-            Rabbit
+            Outfito
           </Link>
         </div>
         {/* Navigation Links */}

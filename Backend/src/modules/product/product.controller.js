@@ -1,4 +1,13 @@
 import Product from "./product.model.js";
+import {
+  getProductsService,
+  getBestSellerService,
+  getNewArrivalsService,
+  getFeaturedProductsService,
+  getSingleProductService,
+  getSimilarProductsService,
+  clearProductCache,
+} from "./product.service.js";
 export const createProduct = async (req, res) => {
   try {
     const {
@@ -53,6 +62,7 @@ export const createProduct = async (req, res) => {
     });
 
     const createdProduct = await product.save();
+    clearProductCache(); // Clear cache on product creation
 
     res.status(201).json(createdProduct);
   } catch (error) {
@@ -117,6 +127,7 @@ export const updateProduct = async (req, res) => {
     product.weight = weight ?? product.weight;
 
     const updatedProduct = await product.save();
+    clearProductCache(); // Clear cache on product update
 
     res.json(updatedProduct);
   } catch (error) {
@@ -133,6 +144,7 @@ export const deleteProduct = async (req, res) => {
     }
 
     await product.deleteOne();
+    clearProductCache(); // Clear cache on product deletion
 
     res.json({ message: "Product deleted successfully" });
   } catch (error) {
@@ -141,142 +153,63 @@ export const deleteProduct = async (req, res) => {
 };
 export const getProducts = async (req, res) => {
   try {
-    const {
-      collection,
-      size,
-      color,
-      gender,
-      minPrice,
-      maxPrice,
-      sortBy,
-      search,
-      category,
-      material,
-      brand,
-      limit,
-    } = req.query;
-
-    let query = {};
-    let sort = {};
-
-    if (collection && collection.toLowerCase() !== "all") {
-      query.collection = collection;
-    }
-
-    if (category && category.toLowerCase() !== "all") {
-      query.category = category;
-    }
-
-    if (material) {
-      query.material = { $in: material.split(",") };
-    }
-
-    if (brand) {
-      query.brand = { $in: brand.split(",") };
-    }
-
-    if (size) {
-      query.sizes = { $in: size.split(",") };
-    }
-
-    if (color) {
-      query.colors = { $in: color.split(",") };
-    }
-
-    if (gender) {
-      query.gender = gender;
-    }
-
-    if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
-    }
-
-    if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-      ];
-    }
-
-    if (sortBy) {
-      switch (sortBy) {
-        case "priceAsc":
-          sort = { price: 1 };
-          break;
-        case "priceDesc":
-          sort = { price: -1 };
-          break;
-        case "popularity":
-          sort = { rating: -1 };
-          break;
-      }
-    }
-
-    let products = await Product.find(query)
-      .sort(sort)
-      .limit(Number(limit) || 0);
-    res.json(products);
+    const result = await getProductsService(req.query);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 
 export const bestSeller = async (req, res) => {
   try {
-    const bestSellers = await Product.findOne().sort({ rating: -1 });
-    if (bestSellers) {
-      res.json(bestSellers);
-    }
+    const bestSellers = await getBestSellerService();
+    res.json(bestSellers);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "No Best Seller Found" });
+    res
+      .status(500)
+      .json({ message: "Error fetching best sellers", error: error.message });
   }
 };
 
 export const newArrivals = async (req, res) => {
   try {
-    const newArrivalsList = await Product.find()
-      .sort({ createdAt: -1 })
-      .limit(8);
+    const newArrivalsList = await getNewArrivalsService();
     res.json(newArrivalsList);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    res
+      .status(500)
+      .json({ message: "Error fetching new arrivals", error: error.message });
   }
 };
 
 export const singleProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findById(id);
+    const product = await getSingleProductService(id);
     if (product) {
       res.json(product);
     } else {
-      res.status(400).json({ message: "Product Not Found" });
+      res.status(404).json({ message: "Product Not Found" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 
 export const similarProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findById(id);
-    if (!product) {
-      return res.status(404).json({ message: "Product Not Found" });
-    }
-    const similarProducts = await Product.find({
-      _id: { $ne: id },
-      gender: product.gender,
-      category: product.category,
-    }).limit(4);
+    const similarProducts = await getSimilarProductsService(id);
     res.json(similarProducts);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    res
+      .status(500)
+      .json({
+        message: "Error fetching similar products",
+        error: error.message,
+      });
   }
 };
