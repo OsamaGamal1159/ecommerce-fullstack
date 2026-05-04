@@ -32,8 +32,8 @@ export const getProductsService = async (query) => {
       page = 1,
     } = query;
 
-    // Build query filter
-    let filter = { isPublished: true };
+    // Build query filter (removed isPublished filter to show all products)
+    let filter = {};
 
     if (collection && collection.toLowerCase() !== "all") {
       filter.collections = { $in: [collection] };
@@ -129,7 +129,7 @@ export const getProductsService = async (query) => {
  */
 export const getBestSellerService = async () => {
   try {
-    const bestSellers = await Product.find({ isPublished: true })
+    const bestSellers = await Product.find({})
       .select(PRODUCT_LIST_FIELDS)
       .sort({ rating: -1, numReviews: -1 })
       .limit(10)
@@ -153,7 +153,7 @@ export const getNewArrivalsService = async () => {
       return featuredCache.data;
     }
 
-    const newArrivals = await Product.find({ isPublished: true })
+    const newArrivals = await Product.find({})
       .select(PRODUCT_LIST_FIELDS)
       .sort({ createdAt: -1 })
       .limit(8)
@@ -173,7 +173,7 @@ export const getNewArrivalsService = async () => {
  */
 export const getFeaturedProductsService = async () => {
   try {
-    const featured = await Product.find({ isFeatured: true, isPublished: true })
+    const featured = await Product.find({ isFeatured: true })
       .select(PRODUCT_LIST_FIELDS)
       .sort({ createdAt: -1 })
       .limit(12)
@@ -215,7 +215,6 @@ export const getSimilarProductsService = async (id) => {
       _id: { $ne: id },
       gender: product.gender,
       category: product.category,
-      isPublished: true,
     })
       .select(PRODUCT_LIST_FIELDS)
       .limit(8)
