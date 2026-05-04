@@ -43,6 +43,7 @@ const importProducts = async () => {
         ? product.collections
         : [product.collections],
       user: adminUser._id,
+      isPublished: true,
     }));
 
     await Product.insertMany(sampleProducts);

@@ -17,6 +17,7 @@ router.post("/", protect, admin, createProduct);
 router.put("/:id", protect, admin, updateProduct);
 router.delete("/:id", protect, admin, deleteProduct);
 router.get("/", getProducts);
+router.get("/collections/:collection", getProducts);
 router.get("/similar/:id", similarProduct);
 router.get("/best-seller", bestSeller);
 router.get("/new-arrivals", newArrivals);

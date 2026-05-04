@@ -86,6 +86,12 @@ const productsSlice = createSlice({
     products: [],
     selectedProduct: null,
     similarProducts: [],
+    pagination: {
+      total: 0,
+      page: 1,
+      limit: 12,
+      pages: 0,
+    },
     loading: false,
     error: null,
     filters: {
@@ -131,7 +137,22 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProductsByFilters.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = Array.isArray(action.payload) ? action.payload : [];
+        if (Array.isArray(action.payload)) {
+          state.products = action.payload;
+          state.pagination = {
+            total: action.payload.length,
+            page: 1,
+            limit: action.payload.length,
+            pages: 1,
+          };
+        } else if (action.payload && typeof action.payload === "object") {
+          state.products = Array.isArray(action.payload.products)
+            ? action.payload.products
+            : [];
+          state.pagination = action.payload.pagination || state.pagination;
+        } else {
+          state.products = [];
+        }
       })
       .addCase(fetchProductsByFilters.rejected, (state, action) => {
         state.loading = false;
