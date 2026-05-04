@@ -14,21 +14,63 @@ import Product from "./modules/product/product.model.js";
 const app = express();
 
 // Configure CORS for Vercel deployment
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://ecommerce-fullstack-lyart.vercel.app",
+  "https://ecommerce-fullstack-1uv3-fdd6mlbxm.vercel.app",
+  "https://ecommerce-fullstack-on6wqfipm-osamagamal1611-3045s-projects.vercel.app",
+];
+
 const corsOptions = {
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "https://ecommerce-fullstack-lyart.vercel.app",
-    "https://ecommerce-fullstack-1uv3-fdd6mlbxm.vercel.app",
-    /^https:\/\/ecommerce-fullstack.*\.vercel\.app$/,
-  ],
+  origin: (origin, callback) => {
+    if (!origin) {
+      // Allow server-to-server or same-origin requests
+      return callback(null, true);
+    }
+
+    const isAllowed =
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/ecommerce-fullstack[-a-z0-9]*\.vercel\.app$/.test(origin);
+    if (isAllowed) {
+      return callback(null, true);
+    }
+
+    callback(new Error("Not allowed by CORS"));
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Origin",
+    "X-Requested-With",
+    "Accept",
+  ],
 };
 
 app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (
+    origin &&
+    (allowedOrigins.includes(origin) ||
+      /^https:\/\/ecommerce-fullstack[-a-z0-9]*\.vercel\.app$/.test(origin))
+  ) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Credentials", "true");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 app.use(express.json());
 
 app.use("/api/users", userRoutes);
