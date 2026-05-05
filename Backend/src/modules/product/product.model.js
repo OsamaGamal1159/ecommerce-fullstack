@@ -16,7 +16,10 @@ const productSchema = new mongoose.Schema(
     gender: { type: String, enum: ["Men", "Women", "unisex"], index: true },
     countInStock: { type: Number, default: 0 },
     images: [
-      { url: { type: String, required: true }, altText: { type: String } },
+      {
+        url: { type: String, required: true },
+        altText: { type: String },
+      },
     ],
     rating: { type: Number, default: 0, min: 0, max: 5, index: true },
     numReviews: { type: Number, default: 0 },

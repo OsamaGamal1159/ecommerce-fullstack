@@ -12,7 +12,7 @@ export const uploadImageController = async (req, res) => {
       return res.status(500).json({ message: "Cloudinary upload failed" });
     }
     res.status(200).json({
-      message: "Image uploaded successfully", 
+      message: "Image uploaded successfully",
       imageUrl: result.secure_url,
     });
   } catch (error) {

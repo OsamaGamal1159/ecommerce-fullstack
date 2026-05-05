@@ -80,11 +80,14 @@ const FilterSidebar = () => {
       if (checked) {
         newFilters[name] = [...(newFilters[name] || []), value];
       } else {
-        newFilters[name] = newFilters[name].filters((item) => item !== value);
+        newFilters[name] = newFilters[name].filter((item) => item !== value);
       }
+    } else if (name === "color") {
+      newFilters.color = filters.color === value ? "" : value;
     } else {
       newFilters[name] = value;
     }
+
     setFilters(newFilters);
     updateURLParams(newFilters);
   };
@@ -107,7 +110,7 @@ const FilterSidebar = () => {
     const newPrice = e.target.value;
     setPriceRange([0, newPrice]);
     const newFilters = { ...filters, minPrice: 0, maxPrice: newPrice };
-    setFilters(filters);
+    setFilters(newFilters);
     updateURLParams(newFilters);
   };
 
