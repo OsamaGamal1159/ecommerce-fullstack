@@ -17,7 +17,7 @@ const ProductDetails = ({ productId }) => {
     (state) => state.products,
   );
   const { user, guestId } = useSelector((state) => state.auth);
-  const { cart } = useSelector((state) => state.cart); 
+  const { cart } = useSelector((state) => state.cart);
 
   const [mainImage, setMainImage] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
@@ -36,7 +36,9 @@ const ProductDetails = ({ productId }) => {
 
   useEffect(() => {
     if (selectedProduct?.images?.length > 0) {
-      setMainImage(selectedProduct.images[0].url);
+      setMainImage(
+        selectedProduct.images[0].display || selectedProduct.images[0].url,
+      );
     }
   }, [selectedProduct]);
 
@@ -58,7 +60,6 @@ const ProductDetails = ({ productId }) => {
       return;
     }
 
-  
     const alreadyInCart = cart?.products?.some(
       (item) =>
         item.productId === productFetchId &&
@@ -109,11 +110,12 @@ const ProductDetails = ({ productId }) => {
               {selectedProduct.images.map((img, index) => (
                 <img
                   key={index}
-                  src={img.url}
+                  src={img.thumbnail || img.url}
                   alt={img.altText}
                   className={`w-20 h-20 object-cover rounded-lg cursor-pointer border
-                 ${mainImage === img.url ? "border-black" : "border-gray-300"}`}
-                  onClick={() => setMainImage(img.url)}
+                 ${mainImage === img.display || mainImage === img.url ? "border-black" : "border-gray-300"}`}
+                  onClick={() => setMainImage(img.display || img.url)}
+                  loading="lazy"
                 />
               ))}
             </div>
@@ -126,6 +128,7 @@ const ProductDetails = ({ productId }) => {
                     src={mainImage}
                     alt="Main Product"
                     className="w-full h-auto object-cover rounded-lg"
+                    loading="lazy"
                   />
                 )}
               </div>
@@ -136,11 +139,12 @@ const ProductDetails = ({ productId }) => {
               {selectedProduct.images.map((img, index) => (
                 <img
                   key={index}
-                  src={img.url}
+                  src={img.thumbnail || img.url}
                   alt={img.altText}
                   className={`w-20 h-20 object-cover rounded-lg cursor-pointer border
-                 ${mainImage === img.url ? "border-black" : "border-gray-300"}`}
-                  onClick={() => setMainImage(img.url)}
+                 ${mainImage === img.display || mainImage === img.url ? "border-black" : "border-gray-300"}`}
+                  onClick={() => setMainImage(img.display || img.url)}
+                  loading="lazy"
                 />
               ))}
             </div>

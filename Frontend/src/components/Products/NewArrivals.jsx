@@ -137,10 +137,15 @@ const NewArrivals = () => {
               className="min-w-full sm:min-w-[50%] lg:min-w-[33.33%] relative"
             >
               <img
-                src={product.images?.[0]?.url || "/placeholder.jpg"}
+                src={
+                  product.images?.[0]?.thumbnail ||
+                  product.images?.[0]?.url ||
+                  "/placeholder.jpg"
+                }
                 alt={product.images?.[0]?.altText || product.name}
                 className="w-full h-[500px] object-cover rounded-lg"
                 draggable={false}
+                loading="lazy"
               />
 
               <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-4 rounded-b-lg">

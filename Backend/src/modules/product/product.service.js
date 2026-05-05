@@ -1,4 +1,5 @@
 import Product from "./product.model.js";
+import { optimizeProductImages } from "../../utils/imageOptimization.js";
 
 // Field selection to reduce payload size
 const PRODUCT_LIST_FIELDS =
@@ -110,8 +111,14 @@ export const getProductsService = async (query) => {
       Product.countDocuments(filter),
     ]);
 
+    // Optimize images for better performance
+    const optimizedProducts = products.map((product) => ({
+      ...product,
+      images: optimizeProductImages(product.images),
+    }));
+
     return {
-      products,
+      products: optimizedProducts,
       pagination: {
         total,
         page: Number(page),
@@ -135,7 +142,13 @@ export const getBestSellerService = async () => {
       .limit(10)
       .lean();
 
-    return bestSellers;
+    // Optimize images
+    const optimizedBestSellers = bestSellers.map((product) => ({
+      ...product,
+      images: optimizeProductImages(product.images),
+    }));
+
+    return optimizedBestSellers;
   } catch (error) {
     throw error;
   }
@@ -159,10 +172,16 @@ export const getNewArrivalsService = async () => {
       .limit(8)
       .lean();
 
-    // Update cache
-    featuredCache = { data: newArrivals, timestamp: now };
+    // Optimize images
+    const optimizedNewArrivals = newArrivals.map((product) => ({
+      ...product,
+      images: optimizeProductImages(product.images),
+    }));
 
-    return newArrivals;
+    // Update cache
+    featuredCache = { data: optimizedNewArrivals, timestamp: now };
+
+    return optimizedNewArrivals;
   } catch (error) {
     throw error;
   }
@@ -179,7 +198,13 @@ export const getFeaturedProductsService = async () => {
       .limit(12)
       .lean();
 
-    return featured;
+    // Optimize images
+    const optimizedFeatured = featured.map((product) => ({
+      ...product,
+      images: optimizeProductImages(product.images),
+    }));
+
+    return optimizedFeatured;
   } catch (error) {
     throw error;
   }
@@ -193,6 +218,10 @@ export const getSingleProductService = async (id) => {
     const product = await Product.findById(id)
       .select(PRODUCT_FULL_FIELDS)
       .lean();
+
+    if (product) {
+      product.images = optimizeProductImages(product.images);
+    }
 
     return product;
   } catch (error) {
@@ -220,7 +249,13 @@ export const getSimilarProductsService = async (id) => {
       .limit(8)
       .lean();
 
-    return similar;
+    // Optimize images
+    const optimizedSimilar = similar.map((product) => ({
+      ...product,
+      images: optimizeProductImages(product.images),
+    }));
+
+    return optimizedSimilar;
   } catch (error) {
     throw error;
   }
