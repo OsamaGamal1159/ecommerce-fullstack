@@ -12,10 +12,10 @@ const ProductGrid = ({ products, loading, error }) => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {products && products.length > 0 ? (
         products.map((product, index) => {
-          const imageUrl =
-            product.images?.[0]?.thumbnail ||
-            product.images?.[0]?.url ||
-            "/placeholder.jpg";
+     const imageUrl =
+       product.images?.[0]?.display ||
+       product.images?.[0]?.url ||
+       "/placeholder.jpg";
           const altText = product.images?.[0]?.altText || product.name;
 
           return (
