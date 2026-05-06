@@ -10,8 +10,15 @@ const EditProductPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-  const { selectedProduct, loading, error } = useSelector(
-    (state) => state.products,
+  const {
+    selectedProduct,
+    loading: fetchLoading,
+    error: fetchError,
+  } = useSelector((state) => state.products);
+
+  // Get admin product state for update operations
+  const { loading: updateLoading, error: updateError } = useSelector(
+    (state) => state.adminProducts,
   );
 
   const [productData, setProductData] = useState({
@@ -31,6 +38,7 @@ const EditProductPage = () => {
   });
 
   const [uploadin, setUploadin] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -43,6 +51,14 @@ const EditProductPage = () => {
       setProductData(selectedProduct);
     }
   }, [selectedProduct]);
+
+  // Navigate when update completes successfully
+  useEffect(() => {
+    if (updateSuccess) {
+      alert("Product updated successfully!");
+      navigate("/admin/products");
+    }
+  }, [updateSuccess, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -80,12 +96,29 @@ const EditProductPage = () => {
       return;
     }
 
-    dispatch(updateProduct({ id, productData }));
-    navigate("/admin/products");
+    console.log("🔄 Submitting product update:", productData);
+    dispatch(updateProduct({ id, productData }))
+      .then((result) => {
+        if (result.payload) {
+          console.log("✅ Update successful");
+          setUpdateSuccess(true);
+        } else if (result.error) {
+          console.error("❌ Update failed:", result.error);
+          alert(
+            "Failed to update product: " +
+              (result.error?.message || "Unknown error"),
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("❌ Update error:", error);
+        alert("Error updating product: " + error.message);
+      });
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error:{error}</p>;
+  if (fetchLoading) return <p>Loading product...</p>;
+  if (fetchError) return <p>Error loading product: {fetchError}</p>;
+  if (updateError) return <p>Error updating product: {updateError}</p>;
 
   return (
     <div className="max-w-5xl mx-auto p-6 shadow-md rounded-md">
@@ -233,9 +266,14 @@ const EditProductPage = () => {
         </div>
         <button
           type="submit"
-          className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition-colors"
+          disabled={updateLoading}
+          className={`w-full py-2 rounded-md transition-colors ${
+            updateLoading
+              ? "bg-gray-400 text-gray-700 cursor-not-allowed"
+              : "bg-green-500 text-white hover:bg-green-600"
+          }`}
         >
-          Update Product
+          {updateLoading ? "Updating..." : "Update Product"}
         </button>
       </form>
     </div>

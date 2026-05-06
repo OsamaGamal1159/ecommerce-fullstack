@@ -110,25 +110,37 @@ const ProductDetails = ({ productId }) => {
               {selectedProduct.images.map((img, index) => (
                 <img
                   key={index}
-                  src={img.thumbnail || img.url}
+                  src={img.thumbnail || img.url || "/placeholder.jpg"}
                   alt={img.altText}
                   className={`w-20 h-20 object-cover rounded-lg cursor-pointer border
                  ${mainImage === img.display || mainImage === img.url ? "border-black" : "border-gray-300"}`}
                   onClick={() => setMainImage(img.display || img.url)}
                   loading="lazy"
+                  onError={(e) => {
+                    e.target.src = "/placeholder.jpg";
+                  }}
                 />
               ))}
             </div>
 
             {/* Main Image */}
             <div className="md:w-1/2">
-              <div className="mb-4">
-                {mainImage && (
+              <div className="mb-4 bg-gray-100">
+                {mainImage ? (
                   <img
                     src={mainImage}
                     alt="Main Product"
                     className="w-full h-auto object-cover rounded-lg"
                     loading="lazy"
+                    onError={(e) => {
+                      e.target.src = "/placeholder.jpg";
+                    }}
+                  />
+                ) : (
+                  <img
+                    src="/placeholder.jpg"
+                    alt="No image available"
+                    className="w-full h-auto object-cover rounded-lg"
                   />
                 )}
               </div>
@@ -139,12 +151,15 @@ const ProductDetails = ({ productId }) => {
               {selectedProduct.images.map((img, index) => (
                 <img
                   key={index}
-                  src={img.thumbnail || img.url}
+                  src={img.thumbnail || img.url || "/placeholder.jpg"}
                   alt={img.altText}
                   className={`w-20 h-20 object-cover rounded-lg cursor-pointer border
                  ${mainImage === img.display || mainImage === img.url ? "border-black" : "border-gray-300"}`}
                   onClick={() => setMainImage(img.display || img.url)}
                   loading="lazy"
+                  onError={(e) => {
+                    e.target.src = "/placeholder.jpg";
+                  }}
                 />
               ))}
             </div>

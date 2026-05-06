@@ -103,6 +103,12 @@ export const updateProduct = async (req, res) => {
       weight,
     } = req.body;
 
+    // Log incoming images for debugging
+    console.log(
+      "📥 Received images for update:",
+      JSON.stringify(images, null, 2),
+    );
+
     product.name = name ?? product.name;
     product.description = description ?? product.description;
     product.price = price ?? product.price;
@@ -126,7 +132,20 @@ export const updateProduct = async (req, res) => {
     product.isPublished = isPublished ?? product.isPublished;
     product.weight = weight ?? product.weight;
 
+    // Log images before save
+    console.log(
+      "💾 Images before save:",
+      JSON.stringify(product.images, null, 2),
+    );
+
     const updatedProduct = await product.save();
+
+    // Log images after save
+    console.log(
+      "✅ Images after save:",
+      JSON.stringify(updatedProduct.images, null, 2),
+    );
+
     clearProductCache(); // Clear cache on product update
 
     res.json(updatedProduct);
@@ -154,6 +173,13 @@ export const deleteProduct = async (req, res) => {
 export const getProducts = async (req, res) => {
   try {
     const result = await getProductsService(req.query);
+    // Log first product to debug images
+    if (result.products && result.products.length > 0) {
+      console.log(
+        "First product images:",
+        JSON.stringify(result.products[0].images, null, 2),
+      );
+    }
     res.json(result);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
@@ -188,6 +214,7 @@ export const singleProduct = async (req, res) => {
     const { id } = req.params;
     const product = await getSingleProductService(id);
     if (product) {
+      console.log("Single product images:", product.images);
       res.json(product);
     } else {
       res.status(404).json({ message: "Product Not Found" });
@@ -205,11 +232,9 @@ export const similarProduct = async (req, res) => {
     res.json(similarProducts);
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        message: "Error fetching similar products",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Error fetching similar products",
+      error: error.message,
+    });
   }
 };

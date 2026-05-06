@@ -48,6 +48,7 @@ export const updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
+      console.error("Product not found:", req.params.id);
       return res.status(404).json({ message: "Product Not Found" });
     }
 
@@ -67,6 +68,11 @@ export const updateProduct = async (req, res) => {
       images,
     } = req.body;
 
+    console.log(
+      "📥 Admin Update - Received images:",
+      JSON.stringify(images, null, 2),
+    );
+
     product.name = name || product.name;
     product.description = description || product.description;
     product.price = price || product.price;
@@ -81,11 +87,22 @@ export const updateProduct = async (req, res) => {
     product.gender = gender || product.gender;
     product.images = images || product.images;
 
+    console.log(
+      "💾 Admin Update - Saving images:",
+      JSON.stringify(product.images, null, 2),
+    );
+
     const updatedProduct = await product.save();
+
+    console.log(
+      "✅ Admin Update - Saved successfully:",
+      JSON.stringify(updatedProduct.images, null, 2),
+    );
+
     res.json(updatedProduct);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("❌ Admin Update Error:", error);
+    res.status(500).json({ message: error.message || "Server Error" });
   }
 };
 

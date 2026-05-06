@@ -10,7 +10,10 @@
  * @returns {string} - Optimized URL
  */
 export const optimizeCloudinaryUrl = (url, options = {}) => {
-  if (!url) return "";
+  if (!url) {
+    console.warn("⚠️ Empty URL passed to optimizeCloudinaryUrl");
+    return "";
+  }
 
   const {
     width = 300,
@@ -19,23 +22,38 @@ export const optimizeCloudinaryUrl = (url, options = {}) => {
     fit = "fill",
   } = options;
 
-  // If it's already a Cloudinary URL, extract the public ID and rebuild with transformations
-  if (url.includes("cloudinary")) {
-    // Match the pattern: /upload/v{version}/{public_id}
-    const match = url.match(/\/upload\/(.*?)\//);
-    if (match) {
-      const cloudinaryPath = match[0];
-      const publicId = url.substring(
-        url.indexOf(cloudinaryPath) + cloudinaryPath.length,
-      );
+  const CLOUDINARY_CLOUD_NAME = "dtvueqy4l";
+  const transformation = `c_${fit},w_${width},q_${quality},f_${format}`;
 
-      return url.replace(
-        `${cloudinaryPath}${publicId}`,
-        `${cloudinaryPath}c_${fit},w_${width},q_${quality},f_${format}/${publicId}`,
-      );
+  console.log(`📸 Input URL: ${url}`);
+
+  // If it's a full Cloudinary URL
+  if (url.includes("cloudinary")) {
+    // Check if transformation already exists
+    if (url.includes(`w_${width}`)) {
+      console.log(`✅ Already optimized, returning: ${url}`);
+      return url; // Already optimized
+    }
+
+    // Match the pattern: /upload/v{version}/{public_id} or /upload/{public_id}
+    const match = url.match(/\/upload\/(?:v\d+\/)?(.+)$/);
+    if (match) {
+      const publicId = match[1];
+      const optimizedUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transformation}/${publicId}`;
+      console.log(`✅ Cloudinary URL optimized to: ${optimizedUrl}`);
+      return optimizedUrl;
     }
   }
 
+  // If it's just a public ID (no URL scheme or domain)
+  if (!url.startsWith("http") && !url.startsWith("data:")) {
+    const optimizedUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transformation}/${url}`;
+    console.log(`✅ Public ID converted to: ${optimizedUrl}`);
+    return optimizedUrl;
+  }
+
+  // For external URLs (picsum, etc.), return as-is (can't transform non-Cloudinary URLs)
+  console.log(`ℹ️ External URL, returning as-is: ${url}`);
   return url;
 };
 
@@ -87,15 +105,36 @@ export const getImageFormats = (url) => {
  * @returns {Array} - Optimized image objects
  */
 export const optimizeProductImages = (images) => {
-  if (!images || !Array.isArray(images)) {
+  if (!images || !Array.isArray(images) || images.length === 0) {
     return [];
   }
 
-  return images.map((image) => ({
-    ...image,
-    thumbnail: optimizeCloudinaryUrl(image.url, { width: 150 }),
-    display: optimizeCloudinaryUrl(image.url, { width: 600 }),
-    full: image.url,
-    srcSet: getSrcSet(image.url),
-  }));
+  return images.map((image) => {
+    // Ensure image has a url property
+    if (!image || !image.url) {
+      console.warn("Image without URL detected:", image);
+      return {
+        url: "",
+        altText: image?.altText || "",
+        thumbnail: "",
+        display: "",
+        full: "",
+        srcSet: "",
+      };
+    }
+
+    console.log("🔧 Optimizing image URL:", image.url);
+
+    const optimized = {
+      ...image,
+      url: image.url,
+      thumbnail: optimizeCloudinaryUrl(image.url, { width: 150 }),
+      display: optimizeCloudinaryUrl(image.url, { width: 600 }),
+      full: image.url,
+      srcSet: getSrcSet(image.url),
+    };
+
+    console.log("✅ Optimized image:", JSON.stringify(optimized, null, 2));
+    return optimized;
+  });
 };

@@ -11,6 +11,11 @@ export const uploadImageController = async (req, res) => {
       console.log("Upload failed, no secure_url returned:", result);
       return res.status(500).json({ message: "Cloudinary upload failed" });
     }
+
+    console.log("📤 Upload successful!");
+    console.log("   Secure URL:", result.secure_url);
+    console.log("   Public ID:", result.public_id);
+
     res.status(200).json({
       message: "Image uploaded successfully",
       imageUrl: result.secure_url,

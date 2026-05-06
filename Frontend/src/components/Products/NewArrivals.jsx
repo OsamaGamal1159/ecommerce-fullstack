@@ -146,6 +146,9 @@ const NewArrivals = () => {
                 className="w-full h-[500px] object-cover rounded-lg"
                 draggable={false}
                 loading="lazy"
+                onError={(e) => {
+                  e.target.src = "/placeholder.jpg";
+                }}
               />
 
               <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-4 rounded-b-lg">

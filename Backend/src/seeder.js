@@ -20,10 +20,7 @@ const connectDB = async () => {
 
 const importProducts = async () => {
   try {
-    await Product.deleteMany();
-    await Cart.deleteMany();
-
-    // ✅ بيدور على admin أو بيعمل واحد جديد
+    // First, find or create admin user
     let adminUser = await User.findOne({ isAdmin: true });
 
     if (!adminUser) {
@@ -37,17 +34,30 @@ const importProducts = async () => {
       console.log("✅ Admin user created!");
     }
 
-    const sampleProducts = products.map((product) => ({
+    // Clear existing products to remove corrupted data
+    console.log("🔄 Clearing existing products...");
+    await Product.deleteMany({});
+    console.log("✅ Cleared all products from database");
+
+    // Add admin user to all products
+    const productsWithAdmin = products.map((product) => ({
       ...product,
-      collections: Array.isArray(product.collections)
-        ? product.collections
-        : [product.collections],
       user: adminUser._id,
-      isPublished: true,
     }));
 
-    await Product.insertMany(sampleProducts);
-    console.log("✅ Products Imported Successfully!");
+    // Insert fresh seed data
+    console.log("📥 Seeding products from seed data...");
+    const createdProducts = await Product.insertMany(productsWithAdmin);
+    console.log(`✅ Successfully seeded ${createdProducts.length} products`);
+
+    // Log first product's images for debugging
+    if (createdProducts.length > 0) {
+      console.log("\n📸 First product images:");
+      console.log(JSON.stringify(createdProducts[0].images, null, 2));
+    }
+
+    // Clear and setup carts
+    await Cart.deleteMany({});
     process.exit();
   } catch (error) {
     console.error("Error importing products:", error);

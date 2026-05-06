@@ -7,15 +7,21 @@ export const streamUpload = (fileBuffer) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
-        transformation: [
-          { width: 1200, height: 1200, crop: "limit" }, // Resize to max 1200x1200
-          { quality: "auto" }, // Auto quality
-          { format: "auto" }, // Auto format (webp, etc.)
-        ],
+        folder: "ecommerce", // Store in ecommerce folder
+        resource_type: "auto", // Auto-detect resource type
+        timeout: 60000, // 60 second timeout
       },
       (error, result) => {
-        if (result) resolve(result);
-        else reject(error);
+        if (error) {
+          console.error("❌ Cloudinary upload error:", error);
+          reject(error);
+        } else {
+          console.log("✅ Cloudinary upload successful!");
+          console.log("   Secure URL:", result.secure_url);
+          console.log("   Public ID:", result.public_id);
+          console.log("   Full response:", JSON.stringify(result, null, 2));
+          resolve(result);
+        }
       },
     );
     streamifier.createReadStream(fileBuffer).pipe(stream);
